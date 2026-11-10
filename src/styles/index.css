@@ -1,0 +1,130 @@
+@import 'tailwindcss';
+
+/* KOTOBA design tokens. Semantic colours are CSS variables so light/dark
+   themes swap without touching components. */
+:root {
+  --paper: #f4f0e7;
+  --paper-muted: #e9e3d8;
+  --ink: #171717;
+  --ink-soft: #5c5850;
+  --line: #17171726;
+  --red: #e64d36;
+  --blue: #5269e8;
+}
+[data-theme='dark'] {
+  --paper: #141414;
+  --paper-muted: #1f1e1c;
+  --ink: #f4f0e7;
+  --ink-soft: #a8a297;
+  --line: #f4f0e72e;
+  --red: #ee5e48;
+  --blue: #7d8ff0;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-muted: var(--paper-muted);
+  --color-ink: var(--ink);
+  --color-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-red: var(--red);
+  --color-blue: var(--blue);
+  --font-sans: 'Inter', 'Noto Sans JP', system-ui, sans-serif;
+  --font-display: 'Fraunces', 'Noto Serif JP', Georgia, serif;
+  --font-jp: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  --font-jp-serif: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+}
+
+html {
+  background: var(--paper);
+  color: var(--ink);
+  scroll-behavior: smooth;
+}
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+/* Faint paper grain: texture without imagery. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+::selection {
+  background: var(--red);
+  color: #f4f0e7;
+}
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+@layer components {
+  .label {
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .rule {
+    border-top: 1px solid var(--line);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1.4rem;
+    font-size: 0.8125rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    border: 1px solid var(--ink);
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+  }
+  .btn:hover:not(:disabled) {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .btn-solid {
+    background: var(--red);
+    border-color: var(--red);
+    color: #f4f0e7;
+  }
+  .btn-solid:hover:not(:disabled) {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .vertical {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+  }
+}
+
+@keyframes ink-in {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.ink-in { animation: ink-in 0.7s cubic-bezier(0.7, 0, 0.2, 1) both; }
+.fade-up { animation: fade-up 0.5s ease both; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
