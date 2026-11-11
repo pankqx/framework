@@ -3,11 +3,22 @@ import { Link, NavLink } from 'react-router-dom'
 import { ThemeToggle } from './ThemeToggle'
 import { repository, storagePersistent } from '@/modules/learner/repository'
 
-const NAV = [
-  { to: '/app', jp: '今日', label: 'Today', end: true },
-  { to: '/app/curriculum', jp: '道', label: 'Curriculum', end: false },
-  { to: '/app/settings', jp: '設定', label: 'Settings', end: false },
+export const NAV = [
+  { to: '/app', jp: '今日', label: 'Today', end: true, mobile: true },
+  { to: '/app/curriculum', jp: '道', label: 'Curriculum', end: false, mobile: true },
+  { to: '/app/review', jp: '復習', label: 'Revision', end: false, mobile: true },
+  { to: '/app/kanji', jp: '漢字', label: 'Kanji Lab', end: false, mobile: false },
+  { to: '/app/sensei', jp: '先生', label: 'AI Sensei', end: false, mobile: true },
+  { to: '/app/reading', jp: '読む', label: 'Reading', end: false, mobile: false },
+  { to: '/app/listening', jp: '聴く', label: 'Listen & Speak', end: false, mobile: false },
+  { to: '/app/writing', jp: '書く', label: 'Writing', end: false, mobile: false },
+  { to: '/app/jlpt', jp: '試験', label: 'JLPT Centre', end: false, mobile: false },
+  { to: '/app/tech', jp: '技術', label: 'Tech Lab', end: false, mobile: false },
+  { to: '/app/challenges', jp: '挑戦', label: 'Challenges', end: false, mobile: false },
+  { to: '/app/analytics', jp: '分析', label: 'Analytics', end: false, mobile: false },
+  { to: '/app/settings', jp: '設定', label: 'Settings', end: false, mobile: false },
 ]
+const MOBILE_NAV = [...NAV.filter((n) => n.mobile), { to: '/app/more', jp: '全部', label: 'More', end: false, mobile: true }]
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -17,23 +28,23 @@ export function AppShell({ children }: { children: ReactNode }) {
       </a>
 
       {/* Desktop: a narrow editorial rail. */}
-      <aside className="sticky top-0 hidden h-dvh flex-col justify-between border-r border-line p-6 md:flex">
+      <aside className="sticky top-0 hidden h-dvh flex-col justify-between gap-6 overflow-y-auto border-r border-line p-6 md:flex">
         <div>
           <Link to="/" className="block" aria-label="KOTOBA home">
             <span className="font-jp-serif text-4xl font-black text-red">言葉</span>
             <span className="label mt-1 block">Kotoba</span>
           </Link>
-          <nav aria-label="Primary" className="mt-14 flex flex-col">
+          <nav aria-label="Primary" className="mt-8 flex flex-col">
             {NAV.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.end}
                 className={({ isActive }) =>
-                  `group flex items-baseline gap-3 border-t border-line py-4 transition-colors last:border-b ${isActive ? 'text-red' : 'hover:text-red'}`
+                  `group flex items-baseline gap-3 border-t border-line py-2 transition-colors last:border-b ${isActive ? 'text-red' : 'hover:text-red'}`
                 }
               >
-                <span className="w-10 font-jp text-xl font-bold">{item.jp}</span>
+                <span className="w-10 font-jp text-base font-bold">{item.jp}</span>
                 <span className="label">{item.label}</span>
               </NavLink>
             ))}
@@ -57,8 +68,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         {children}
       </main>
 
-      <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-line bg-paper md:hidden">
-        {NAV.map((item) => (
+      <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-line bg-paper md:hidden">
+        {MOBILE_NAV.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}

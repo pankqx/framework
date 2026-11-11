@@ -1,16 +1,15 @@
 import type { Level } from '@/modules/learner/types'
 
 /**
- * Curriculum ARCHITECTURE. Module outlines only: lesson content is added
- * level by level from attributed references and is counted as published only
- * when it actually exists. `lessonsPublished` is therefore 0 everywhere today.
+ * Curriculum ARCHITECTURE: levels and module outlines. Lesson content lives in
+ * src/content and is counted from the real lesson files (see content/lessons.ts),
+ * so a module shows lessons only when they actually exist.
  */
 export interface ModuleOutline {
   slug: string
   title: string
   jp: string
   topics: string[]
-  lessonsPublished: number
 }
 export interface LevelOutline {
   level: Level
@@ -19,7 +18,7 @@ export interface LevelOutline {
   modules: ModuleOutline[]
 }
 
-const m = (slug: string, title: string, jp: string, topics: string[]): ModuleOutline => ({ slug, title, jp, topics, lessonsPublished: 0 })
+const m = (slug: string, title: string, jp: string, topics: string[]): ModuleOutline => ({ slug, title, jp, topics })
 
 export const CURRICULUM: LevelOutline[] = [
   {
@@ -100,4 +99,3 @@ export const CURRICULUM: LevelOutline[] = [
 ]
 
 export const outlineFor = (level: Level) => CURRICULUM.find((l) => l.level === level)!
-export const publishedLessonCount = () => CURRICULUM.reduce((n, l) => n + l.modules.reduce((k, x) => k + x.lessonsPublished, 0), 0)

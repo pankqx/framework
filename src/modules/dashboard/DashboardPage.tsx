@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import { useLearner } from '@/modules/learner/hooks'
 import { LEVEL_LABEL, type Skill } from '@/modules/learner/types'
 import { formatDuration, lastSevenDays, secondsOn, skillAccuracy, streak, weakConcepts } from '@/modules/analytics/stats'
-import { outlineFor } from '@/modules/curriculum/structure'
+import { levelProgress, nextLesson } from '@/content/lessons'
+import { dueCards, masteredCards, upcomingCards } from '@/modules/revision/srs'
 import { generatePlan } from '@/modules/onboarding/plan'
 import { PlanView } from '@/modules/onboarding/PlanView'
 import { Skeleton } from '@/components/Loader'
@@ -45,7 +46,7 @@ export default function DashboardPage() {
       </div>
     )
   }
-  const { profile, goals, sessions, attempts, assessmentResults } = data
+  const { profile, goals, sessions, attempts, assessmentResults, lessonCompletions, cards, examResults } = data
   const now = new Date()
   const [jpHello, enHello] = greeting(now.getHours())
 
@@ -59,8 +60,12 @@ export default function DashboardPage() {
   const accuracy = skillAccuracy(attempts)
   const weak = weakConcepts(attempts)
   const plan = generatePlan(goals, profile.currentLevel)
-  const outline = outlineFor(profile.currentLevel)
-  const nextModule = outline.modules[0]!
+  const lesson = nextLesson(profile.currentLevel, lessonCompletions)
+  const due = dueCards(cards, now)
+  const upcoming = upcomingCards(cards, now)
+  const mastered = masteredCards(cards)
+  const targetProgress = levelProgress(goals.jlptTarget, lessonCompletions)
+  const exams = examResults.filter((e) => e.level === goals.jlptTarget)
   const placement = [...assessmentResults].reverse().find((r) => r.kind === 'placement')
 
   return (
@@ -81,7 +86,7 @@ export default function DashboardPage() {
         </dl>
       </header>
 
-      <div className="grid grid-cols-12 gap-x-10 gap-y-12">
+      <div className="grid grid-cols-12 gap-y-12 lg:gap-x-10">
         {/* Today */}
         <Panel no="01" jp="今日" title="Today’s objective" className="col-span-12 lg:col-span-7">
           <div className="flex items-end justify-between gap-4">
@@ -103,17 +108,28 @@ export default function DashboardPage() {
                 <p className="mt-2 leading-relaxed text-soft">Your level is currently your own estimate. Ten minutes will position your plan properly and reveal your first weak points.</p>
                 <Link to="/onboarding?retake=1" className="btn btn-solid mt-5">Start assessment <span aria-hidden>→</span></Link>
               </>
+            ) : due.length > 0 ? (
+              <>
+                <p lang="ja" className="mt-2 font-jp-serif text-5xl font-black">復習</p>
+                <h3 className="mt-2 font-display text-3xl tracking-tight">{due.length} card{due.length === 1 ? '' : 's'} due for revision</h3>
+                <p className="mt-2 leading-relaxed text-soft">Recall first, then new material{lesson ? `: ${lesson.title}` : ''}.</p>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Link to="/app/review" className="btn btn-solid">Review now <span aria-hidden>→</span></Link>
+                  {lesson && <Link to={`/app/lesson/${lesson.slug}`} className="btn">Today’s lesson</Link>}
+                </div>
+              </>
+            ) : lesson ? (
+              <>
+                <p lang="ja" className="mt-2 font-jp-serif text-5xl font-black break-words">{lesson.jp}</p>
+                <h3 className="mt-2 font-display text-3xl tracking-tight">{LEVEL_LABEL[lesson.level]} · {lesson.title}</h3>
+                <p className="mt-2 leading-relaxed text-soft">{lesson.objective}</p>
+                <Link to={`/app/lesson/${lesson.slug}`} className="btn btn-solid mt-5">{lessonCompletions.length ? 'Continue learning' : 'Start today’s lesson'} <span aria-hidden>→</span></Link>
+              </>
             ) : (
               <>
-                <p lang="ja" className="mt-2 font-jp-serif text-5xl font-black">{nextModule.jp}</p>
-                <h3 className="mt-2 font-display text-3xl tracking-tight">{LEVEL_LABEL[profile.currentLevel]} · {nextModule.title}</h3>
-                <p className="mt-2 leading-relaxed text-soft">{nextModule.topics.join(' · ')}</p>
-                {nextModule.lessonsPublished === 0 && (
-                  <p className="mt-4 border-l-2 border-blue pl-3 text-sm leading-relaxed text-soft">
-                    Lessons for this module are not published yet — the lesson engine is the next build milestone. Until then, review the weak points from your assessment below.
-                  </p>
-                )}
-                <Link to="/app/curriculum" className="btn mt-5">View curriculum <span aria-hidden>→</span></Link>
+                <h3 className="mt-2 font-display text-3xl tracking-tight">Every published lesson is complete</h3>
+                <p className="mt-2 leading-relaxed text-soft">Keep your revision going and practise in the studios while more lessons are written.</p>
+                <Link to="/app/more" className="btn mt-5">Open the studios <span aria-hidden>→</span></Link>
               </>
             )}
           </div>
@@ -172,13 +188,14 @@ export default function DashboardPage() {
         {/* Revision */}
         <Panel no="05" jp="復習" title="Revision & mastery" className="col-span-12 md:col-span-6 lg:col-span-4">
           <dl className="grid grid-cols-3 gap-px border border-line bg-line">
-            <Stat label="Due now" value="0" note="cards" />
-            <Stat label="Upcoming" value="0" note="cards" />
-            <Stat label="Mastered" value="0" note="concepts" />
+            <Stat label="Due now" value={String(due.length)} note="cards" accent={due.length > 0} />
+            <Stat label="Next 7 days" value={String(upcoming.length)} note="cards" />
+            <Stat label="Mastered" value={String(mastered.length)} note={`of ${cards.length}`} />
           </dl>
           <p className="mt-4 text-sm leading-relaxed text-soft">
-            You have no revision cards yet: vocabulary, kanji and grammar cards are created by lessons, and the revision system has not been built yet. Mastery will only ever be counted from repeated successful recall.
+            {cards.length === 0 ? 'No revision cards yet — completing a lesson adds its vocabulary and grammar.' : 'Mastered means recalled successfully several times in a row at a long interval — never just “lesson finished”.'}
           </p>
+          <Link to="/app/review" className="label mt-3 inline-flex min-h-11 items-center border-b border-ink hover:border-red hover:text-red">Open revision</Link>
         </Panel>
 
         {/* JLPT */}
@@ -195,7 +212,12 @@ export default function DashboardPage() {
           ) : (
             <Empty>No assessment taken yet.</Empty>
           )}
-          <p className="mt-4 text-xs leading-relaxed text-soft">Placement stages only — no mock examinations taken. These are not JLPT scores.</p>
+          <ul className="mt-3">
+            <li className="flex items-baseline justify-between border-b border-line py-2.5"><span>Lessons at target level</span><span className="label">{targetProgress.total ? `${targetProgress.done}/${targetProgress.total}` : 'none published'}</span></li>
+            <li className="flex items-baseline justify-between border-b border-line py-2.5"><span>Practice exams taken</span><span className="label">{exams.length}{exams.length ? ` · ${exams.reduce((n, e) => n + e.correct, 0)}/${exams.reduce((n, e) => n + e.total, 0)} correct` : ''}</span></li>
+          </ul>
+          <p className="mt-4 text-xs leading-relaxed text-soft">Practice results only. These are not JLPT scores.</p>
+          <Link to="/app/jlpt" className="label mt-2 inline-flex min-h-11 items-center border-b border-ink hover:border-red hover:text-red">Examination centre</Link>
         </Panel>
 
         {/* Plan */}

@@ -9,6 +9,10 @@ const OnboardingPage = lazy(() => import('@/modules/onboarding/OnboardingPage'))
 const DashboardPage = lazy(() => import('@/modules/dashboard/DashboardPage'))
 const CurriculumPage = lazy(() => import('@/modules/curriculum/CurriculumPage'))
 const SettingsPage = lazy(() => import('@/modules/settings/SettingsPage'))
+const LessonPage = lazy(() => import('@/modules/lessons/LessonPage'))
+const ReviewPage = lazy(() => import('@/modules/revision/ReviewPage'))
+const KanjiPage = lazy(() => import('@/modules/kanji/KanjiPage'))
+const MorePage = lazy(() => import('@/modules/dashboard/MorePage'))
 
 /** The learning app needs a profile; without one, onboarding comes first. */
 function RequireLearner() {
@@ -42,6 +46,10 @@ export function App() {
         <Route path="/app" element={<RequireLearner />}>
           <Route index element={<DashboardPage />} />
           <Route path="curriculum" element={<CurriculumPage />} />
+          <Route path="lesson/:slug" element={<LessonPage />} />
+          <Route path="review" element={<ReviewPage />} />
+          <Route path="kanji" element={<KanjiPage />} />
+          <Route path="more" element={<MorePage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
