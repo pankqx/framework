@@ -45,6 +45,7 @@ export function ExerciseRunner({
   const [showTranscript, setShowTranscript] = useState(false)
   const [remaining, setRemaining] = useState(timeLimitSeconds ?? 0)
   const finished = useRef(false)
+  const resultsRef = useRef<boolean[]>([])
 
   const exercise = exercises[index]!
   const options = useMemo(() => (exercise.kind === 'mcq' ? shuffled(exercise.options, exercise.key) : []), [exercise])
@@ -69,7 +70,7 @@ export function ExerciseRunner({
       setRemaining(Math.max(0, left))
       if (left <= 0) {
         clearInterval(t)
-        setResults((r) => (finish(r, true), r))
+        finish(resultsRef.current, true)
       }
     }, 500)
     return () => clearInterval(t)
@@ -104,6 +105,7 @@ export function ExerciseRunner({
     const correct = isCorrect(exercise, r)
     const all = [...results, correct]
     setResults(all)
+    resultsRef.current = all
     record(r, correct)
     if (deferFeedback) next(all)
     else setResponse(r)
@@ -128,6 +130,7 @@ export function ExerciseRunner({
         {exercise.passage && (
           <div className="mt-6 border-l-4 border-ink bg-muted p-5 text-xl leading-[2.4]"><JP text={exercise.passage} /></div>
         )}
+        {exercise.code && <pre className="mt-6 overflow-x-auto bg-[#141414] p-4 text-sm leading-6 text-[#f4f0e7]"><code>{exercise.code}</code></pre>}
         {exercise.audio && (
           <div className="mt-6">
             <AudioButton text={exercise.audio} label="Play audio" />

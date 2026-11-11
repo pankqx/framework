@@ -12,6 +12,14 @@ const SettingsPage = lazy(() => import('@/modules/settings/SettingsPage'))
 const LessonPage = lazy(() => import('@/modules/lessons/LessonPage'))
 const ReviewPage = lazy(() => import('@/modules/revision/ReviewPage'))
 const KanjiPage = lazy(() => import('@/modules/kanji/KanjiPage'))
+const SenseiPage = lazy(() => import('@/modules/sensei/SenseiPage'))
+const ReadingPage = lazy(() => import('@/modules/reading/ReadingPage'))
+const ListeningPage = lazy(() => import('@/modules/listening/ListeningPage'))
+const WritingPage = lazy(() => import('@/modules/writing/WritingPage'))
+const JlptPage = lazy(() => import('@/modules/jlpt/JlptPage'))
+const TechLabPage = lazy(() => import('@/modules/techlab/TechLabPage'))
+const ChallengesPage = lazy(() => import('@/modules/challenges/ChallengesPage'))
+const AnalyticsPage = lazy(() => import('@/modules/analytics/AnalyticsPage'))
 const MorePage = lazy(() => import('@/modules/dashboard/MorePage'))
 
 /** The learning app needs a profile; without one, onboarding comes first. */
@@ -49,6 +57,14 @@ export function App() {
           <Route path="lesson/:slug" element={<LessonPage />} />
           <Route path="review" element={<ReviewPage />} />
           <Route path="kanji" element={<KanjiPage />} />
+          <Route path="sensei" element={<SenseiPage />} />
+          <Route path="reading" element={<ReadingPage />} />
+          <Route path="listening" element={<ListeningPage />} />
+          <Route path="writing" element={<WritingPage />} />
+          <Route path="jlpt" element={<JlptPage />} />
+          <Route path="tech" element={<TechLabPage />} />
+          <Route path="challenges" element={<ChallengesPage />} />
+          <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="more" element={<MorePage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>

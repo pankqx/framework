@@ -116,6 +116,7 @@ export const learnerStateSchema = z.object({
   examResults: z.array(examResultSchema).default([]),
   diary: z.array(diaryEntrySchema).default([]),
   conversations: z.array(conversationSchema).default([]),
+  challenge: z.object({ days: z.union([z.literal(30), z.literal(60), z.literal(90)]), startedAt: z.string() }).nullable().default(null),
 })
 export type LearnerState = z.infer<typeof learnerStateSchema>
 
@@ -132,4 +133,5 @@ export const emptyLearnerState = (): LearnerState => ({
   examResults: [],
   diary: [],
   conversations: [],
+  challenge: null,
 })

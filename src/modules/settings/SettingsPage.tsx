@@ -60,7 +60,8 @@ export default function SettingsPage() {
             state={supabaseConfigured ? 'Keys detected, but account sync is not implemented in this build yet' : 'Not configured — see .env.example'}
             ok={false}
           />
-          <Service name="AI Sensei" state="Not built yet — no AI provider is called by this build" ok={false} />
+          <Service name="AI Sensei" state={supabaseConfigured ? 'Endpoint set — requires the deployed sensei function and AI secrets' : 'Not connected — no AI provider is called'} ok={supabaseConfigured} />
+          <Service name="Audio" state="Device speech synthesis (no recorded audio)" ok />
         </ul>
       </section>
 

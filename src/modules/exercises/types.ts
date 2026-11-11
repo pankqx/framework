@@ -11,6 +11,8 @@ interface Base {
   passage?: string
   /** Japanese text to be spoken by the device's speech synthesis (listening items). */
   audio?: string
+  /** Source code shown verbatim above the question (Tech Lab). Never translated. */
+  code?: string
 }
 export interface McqExercise extends Base {
   kind: 'mcq'

@@ -5,6 +5,7 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import { CURRICULUM } from '@/modules/curriculum/structure'
 import { LEVEL_LABEL } from '@/modules/learner/types'
 import { useLearner } from '@/modules/learner/hooks'
+import { lessonsIn } from '@/content/lessons'
 
 function Reveal({ children, delay = 0, className = '' }: { children: ReactNode; delay?: number; className?: string }) {
   return (
@@ -67,10 +68,10 @@ const SENSEI_MODES = [
 ] as const
 
 const STUDIOS = [
-  ['漢字', 'Kanji Lab', 'Readings in real vocabulary, stroke order, radicals and look-alike comparisons.', false],
-  ['復習', 'Spaced revision', 'Again · Hard · Good · Easy — scheduled around your own recall, with custom cards.', false],
-  ['聴・話', 'Speaking & Listening Studio', 'Slow and natural playback, transcripts on demand, honest microphone states.', false],
-  ['読・書', 'Reading & Writing Studio', 'Graded passages with furigana control; sentences, paragraphs and a diary with feedback.', false],
+  ['漢字', 'Kanji Lab', 'Readings in real vocabulary, radicals, look-alike comparisons and a tracing pad.', true],
+  ['復習', 'Spaced revision', 'Again · Hard · Good · Easy — scheduled around your own recall, with custom cards.', true],
+  ['聴・話', 'Speaking & Listening Studio', 'Slow and natural playback, transcripts on demand, honest microphone states.', true],
+  ['読・書', 'Reading & Writing Studio', 'Graded passages with furigana control; sentences, paragraphs and a diary with feedback.', true],
   ['診断', 'Placement assessment', 'An adaptive check from kana to N3 that explains every answer and sets your starting point.', true],
   ['計画', 'Personal learning plan', 'Your daily minutes divided between new material and recall, shaped by your goal.', true],
 ] as const
@@ -199,12 +200,12 @@ export default function LandingPage() {
                 </span>
                 <h3 className="mt-6 font-display text-xl tracking-tight">{LEVEL_LABEL[stage.level]}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-soft">{stage.summary}</p>
-                <p className="label mt-auto pt-6 text-soft">{stage.modules.length} modules planned</p>
+                <p className="label mt-auto pt-6 text-soft">{lessonsIn(stage.level).length ? `${lessonsIn(stage.level).length} lessons` : 'Outline only'}</p>
               </li>
             ))}
           </ol>
           <p className="mt-4 px-5 text-xs text-soft md:px-10">
-            The structure above is built. Lesson content is being written level by level from attributed references and appears only once it is verified.
+            Lessons are published for Foundation, N5, N4 and the start of N3; N2 and N1 are outlines so far. Content is original and still awaiting review by a qualified teacher.
           </p>
         </section>
 
@@ -228,7 +229,7 @@ export default function LandingPage() {
             <p className="max-w-xl text-sm text-soft">
               Daily tasks, weekly assessment and a final evaluation, scaled to the minutes you have. A challenge gives structure — it does not promise fluency or a JLPT result.
             </p>
-            <Status live={false} />
+            <Status live />
           </div>
         </section>
 
@@ -282,7 +283,7 @@ export default function LandingPage() {
                 </dl>
               </figure>
               <p className="label mt-4 flex items-center gap-2 opacity-60">
-                <span aria-hidden className="h-1.5 w-1.5 rounded-full border border-current" /> In development
+                <span aria-hidden className="h-1.5 w-1.5 rounded-full border border-current" /> Built — needs an AI key to switch on
               </p>
             </Reveal>
           </div>
@@ -312,7 +313,7 @@ export default function LandingPage() {
               <p className="mt-6 max-w-sm leading-relaxed text-soft">
                 Original practice questions in the official question formats, timed like the real examination. A practice score here is never an official JLPT score.
               </p>
-              <div className="mt-4"><Status live={false} /></div>
+              <div className="mt-4"><Status live /></div>
             </Reveal>
             <div className="col-span-12 md:col-span-6 md:col-start-7">
               <p className="label text-soft">N3 examination structure</p>
@@ -345,7 +346,7 @@ export default function LandingPage() {
               <p className="mt-4 max-w-md leading-relaxed text-soft">
                 Learn Japanese through software engineering: documentation, code comments, architecture vocabulary and technical interviews. Code stays in its real language — only the human parts are in Japanese.
               </p>
-              <div className="mt-4"><Status live={false} /></div>
+              <div className="mt-4"><Status live /></div>
             </Reveal>
             <Reveal delay={0.1} className="col-span-12 md:col-span-6 md:col-start-7">
               <pre className="overflow-x-auto bg-[#141414] p-6 text-sm leading-7 text-[#f4f0e7]"><code>
